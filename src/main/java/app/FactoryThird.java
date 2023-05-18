@@ -29,7 +29,6 @@ public class FactoryThird implements DIFactory{
         interfaceImplementationMap = new HashMap<>();
         interfaceInstanceMap = new HashMap<>();
         scanComponents();
-        System.out.println();
     }
 
 
@@ -37,21 +36,20 @@ public class FactoryThird implements DIFactory{
     public <T> T getInstance(Class<T> interfaceClazz) {
         if (interfaceInstanceMap.containsKey(interfaceClazz)) return interfaceClazz.cast(interfaceInstanceMap.get(interfaceClazz));
         else if (interfaceImplementationMap.containsKey(interfaceClazz)) {
-            Class<?> implementationClass = interfaceImplementationMap.get(interfaceClazz);
-            T fromImplementation = createFromImplementation(interfaceClazz, implementationClass);
-            interfaceInstanceMap.put(interfaceClazz, fromImplementation);
-            return fromImplementation;
+            createInstanceFromImplementation(interfaceClazz);
+            return getInstance(interfaceClazz);
         }
-        throw new RuntimeException("no implementations found!");
+        throw new RuntimeException("no implementations found for " + interfaceClazz.getName());
     }
 
-    private <T> T createFromImplementation(Class<T> interfaceClass, Class<?> implementationClass) {
+    private void createInstanceFromImplementation(Class<?> interfaceClass) {
         try {
-            Constructor<?> constructor = Arrays.stream(implementationClass.getDeclaredConstructors())
+            Constructor<?> constructor = Arrays
+                    .stream(interfaceImplementationMap.get(interfaceClass).getDeclaredConstructors())
                     .findFirst().orElseThrow(RuntimeException::new);
             Object[] objects = Arrays.stream(constructor.getParameters())
                     .map(Parameter::getType).map(this::getInstance).toArray();
-            return interfaceClass.cast(constructor.newInstance(objects));
+            interfaceInstanceMap.put(interfaceClass, constructor.newInstance(objects));
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
@@ -73,7 +71,7 @@ public class FactoryThird implements DIFactory{
 
     private void addToImplementationMap(Class<?> clazz, Class<?> interfaceClazz) {
         if (interfaceInstanceMap.containsKey(interfaceClazz) || interfaceImplementationMap.containsKey(interfaceClazz))
-            throw new RuntimeException("Found second implementation");
+            throw new RuntimeException("Found second implementation for " + interfaceClazz.getName());
         else interfaceImplementationMap.put(interfaceClazz, clazz);
     }
 
@@ -99,7 +97,8 @@ public class FactoryThird implements DIFactory{
     }
 
     private void addToInstanceMap(Object invoke, Class<?> anInterface) {
-        if (interfaceInstanceMap.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
+        if (interfaceInstanceMap.containsKey(anInterface) || interfaceImplementationMap.containsKey(anInterface))
+            throw new RuntimeException("Found second implementation for " + anInterface.getName());
         else interfaceInstanceMap.put(anInterface, invoke);
     }
 
