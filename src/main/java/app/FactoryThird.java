@@ -67,11 +67,11 @@ public class FactoryThird implements DIFactory{
             Predicate<Class<?>> isDesiredInterface = interfaceClazz
                     -> interfaceClazz.getPackage().getName().startsWith(packageName);
             Arrays.stream(clazz.getInterfaces()).filter(isDesiredInterface)
-                    .forEach(interfaceClazz -> addToContext(clazz, interfaceClazz));
+                    .forEach(interfaceClazz -> addToImplementationMap(clazz, interfaceClazz));
         }
     }
 
-    private void addToContext(Class<?> clazz, Class<?> interfaceClazz) {
+    private void addToImplementationMap(Class<?> clazz, Class<?> interfaceClazz) {
         if (interfaceInstanceMap.containsKey(interfaceClazz) || interfaceImplementationMap.containsKey(interfaceClazz))
             throw new RuntimeException("Found second implementation");
         else interfaceImplementationMap.put(interfaceClazz, clazz);
@@ -92,13 +92,13 @@ public class FactoryThird implements DIFactory{
         try {
             Object invoke = method.invoke(instance);
             Class<?> anInterface = method.getReturnType();
-            addToHash(invoke, anInterface);
+            addToInstanceMap(invoke, anInterface);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void addToHash(Object invoke, Class<?> anInterface) {
+    private void addToInstanceMap(Object invoke, Class<?> anInterface) {
         if (interfaceInstanceMap.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
         else interfaceInstanceMap.put(anInterface, invoke);
     }
