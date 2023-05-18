@@ -5,7 +5,7 @@ import app.calc.CalcPro;
 
 public class App {
     public static void main(String[] args) {
-        var factory = new FactorySecond("app");
+        var factory = new FactoryThird("app");
         Calc calc = factory.getInstance(Calc.class);
         Calc calc1 = factory.getInstance(Calc.class);
 
