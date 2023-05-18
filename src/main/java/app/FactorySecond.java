@@ -78,15 +78,19 @@ public class FactorySecond implements DIFactory {
             for (Class<?> clazz : annotatedClasses) {
                 Object instance = clazz.getDeclaredConstructor().newInstance();
                 Method[] methods = Arrays.stream(clazz.getMethods()).filter(v -> v.isAnnotationPresent(Bean.class)).toArray(Method[]::new);
-                for (Method method : methods) {
-                    Object invoke = method.invoke(instance);
-                    Class<?> anInterface = invoke.getClass().getInterfaces()[0];
-                    if (hash.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
-                    else hash.put(anInterface, invoke);
-                }
+                handleMethods(instance, methods);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void handleMethods(Object instance, Method[] methods) throws IllegalAccessException, InvocationTargetException {
+        for (Method method : methods) {
+            Object invoke = method.invoke(instance);
+            Class<?> anInterface = invoke.getClass().getInterfaces()[0];
+            if (hash.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
+            else hash.put(anInterface, invoke);
         }
     }
 }
