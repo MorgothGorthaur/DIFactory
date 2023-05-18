@@ -12,6 +12,7 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class FactorySecond implements DIFactory {
     private final Map<Class<?>, Class<?>> context;
@@ -59,8 +60,9 @@ public class FactorySecond implements DIFactory {
     }
 
     private void handleAnnotatedClass(Class<?> clazz) {
-        Arrays.stream(clazz.getInterfaces())
-                .filter(interfaceClazz -> interfaceClazz.getPackage().getName().startsWith(packageName))
+        Predicate<Class<?>> isDesiredInterface = interfaceClazz
+                -> interfaceClazz.getPackage().getName().startsWith(packageName);
+        Arrays.stream(clazz.getInterfaces()).filter(isDesiredInterface)
                 .forEach(interfaceClazz -> addToContext(clazz, interfaceClazz));
     }
 
