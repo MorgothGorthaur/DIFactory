@@ -31,7 +31,9 @@ public class FactorySecond implements DIFactory {
         scanComponents();
         System.out.println(hash);
         System.out.println(context);
+        for (var f : context.entrySet()) System.out.println(f.getKey().hashCode());
     }
+
     @Override
     public <T> T getInstance(Class<T> interfaceClazz) {
         if (hash.containsKey(interfaceClazz)) return interfaceClazz.cast(hash.get(interfaceClazz));
@@ -59,38 +61,52 @@ public class FactorySecond implements DIFactory {
     private void scanComponents() {
         try {
             Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Component.class);
-            annotatedClasses.forEach(clazz -> Arrays.stream(clazz.getInterfaces())
-                    .filter(interfaceClazz -> interfaceClazz.getPackage().getName().startsWith(packageName))
-                    .forEach(interfaceClazz -> {
-                        if (hash.containsKey(interfaceClazz) || context.containsKey(interfaceClazz))
-                            throw new RuntimeException("Found second implementation");
-                        else context.put(interfaceClazz, clazz);
-                    })
-            );
+            annotatedClasses.forEach(this::handleAnnotatedClass);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void handleAnnotatedClass(Class<?> clazz) {
+        Arrays.stream(clazz.getInterfaces())
+                .filter(interfaceClazz -> interfaceClazz.getPackage().getName().startsWith(packageName))
+                .forEach(interfaceClazz -> addToContext(clazz, interfaceClazz));
+    }
+
+    private void addToContext(Class<?> clazz, Class<?> interfaceClazz) {
+        if (hash.containsKey(interfaceClazz) || context.containsKey(interfaceClazz))
+            throw new RuntimeException("Found second implementation");
+        else context.put(interfaceClazz, clazz);
     }
 
     private void scanConfigs() {
+        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Config.class);
+        annotatedClasses.forEach(this::handleConfig);
+    }
+
+    private void handleConfig(Class<?> clazz) {
         try {
-            Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Config.class);
-            for (Class<?> clazz : annotatedClasses) {
-                Object instance = clazz.getDeclaredConstructor().newInstance();
-                Method[] methods = Arrays.stream(clazz.getMethods()).filter(v -> v.isAnnotationPresent(Bean.class)).toArray(Method[]::new);
-                handleMethods(instance, methods);
-            }
+            Object instance = clazz.getDeclaredConstructor().newInstance();
+            Arrays.stream(clazz.getMethods()).filter(v -> v.isAnnotationPresent(Bean.class))
+                            .forEach(v -> handleMethod(instance, v));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void handleMethods(Object instance, Method[] methods) throws IllegalAccessException, InvocationTargetException {
-        for (Method method : methods) {
+    private void handleMethod(Object instance, Method method) {
+        try {
             Object invoke = method.invoke(instance);
             Class<?> anInterface = invoke.getClass().getInterfaces()[0];
-            if (hash.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
-            else hash.put(anInterface, invoke);
+            addToHash(invoke, anInterface);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    private void addToHash(Object invoke, Class<?> anInterface) {
+        if (hash.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
+        else hash.put(anInterface, invoke);
+    }
+
 }
