@@ -86,7 +86,7 @@ public class FactorySecond implements DIFactory {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         }
     }
 }
