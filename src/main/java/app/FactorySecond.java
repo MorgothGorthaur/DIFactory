@@ -60,8 +60,7 @@ public class FactorySecond implements DIFactory {
 
     private void scanComponents() {
         try {
-            Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Component.class);
-            annotatedClasses.forEach(this::handleAnnotatedClass);
+            reflections.getTypesAnnotatedWith(Component.class).forEach(this::handleAnnotatedClass);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -80,8 +79,7 @@ public class FactorySecond implements DIFactory {
     }
 
     private void scanConfigs() {
-        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Config.class);
-        annotatedClasses.forEach(this::handleConfig);
+        reflections.getTypesAnnotatedWith(Config.class).forEach(this::handleConfig);
     }
 
     private void handleConfig(Class<?> clazz) {
