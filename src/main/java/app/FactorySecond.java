@@ -41,7 +41,7 @@ public class FactorySecond implements DIFactory {
             hash.put(interfaceClazz, fromImplementation);
             return fromImplementation;
         }
-        throw new RuntimeException();
+        throw new RuntimeException("no implementations found!");
     }
 
     private <T> T createFromImplementation(Class<T> interfaceClass, Class<?> implementationClass) {
@@ -63,7 +63,7 @@ public class FactorySecond implements DIFactory {
                     .filter(interfaceClazz -> interfaceClazz.getPackage().getName().startsWith(packageName))
                     .forEach(interfaceClazz -> {
                         if (hash.containsKey(interfaceClazz) || context.containsKey(interfaceClazz))
-                            throw new RuntimeException();
+                            throw new RuntimeException("Found second implementation");
                         else context.put(interfaceClazz, clazz);
                     })
             );
@@ -81,7 +81,7 @@ public class FactorySecond implements DIFactory {
                 for (Method method : methods) {
                     Object invoke = method.invoke(instance);
                     Class<?> anInterface = invoke.getClass().getInterfaces()[0];
-                    if (hash.containsKey(anInterface)) throw new RuntimeException();
+                    if (hash.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
                     else hash.put(anInterface, invoke);
                 }
             }
