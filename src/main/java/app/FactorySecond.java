@@ -28,9 +28,6 @@ public class FactorySecond implements DIFactory {
         hash = new HashMap<>();
         scanConfigs();
         scanComponents();
-        System.out.println(hash);
-        System.out.println(context);
-        for (var f : context.entrySet()) System.out.println(f.getKey().hashCode());
     }
 
     @Override
