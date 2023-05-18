@@ -12,7 +12,6 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class FactorySecond implements DIFactory {
     private final Map<Class<?>, Class<?>> context;
@@ -59,11 +58,7 @@ public class FactorySecond implements DIFactory {
     }
 
     private void scanComponents() {
-        try {
-            reflections.getTypesAnnotatedWith(Component.class).forEach(this::handleAnnotatedClass);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        reflections.getTypesAnnotatedWith(Component.class).forEach(this::handleAnnotatedClass);
     }
 
     private void handleAnnotatedClass(Class<?> clazz) {
@@ -86,16 +81,17 @@ public class FactorySecond implements DIFactory {
         try {
             Object instance = clazz.getDeclaredConstructor().newInstance();
             Arrays.stream(clazz.getMethods()).filter(v -> v.isAnnotationPresent(Bean.class))
-                            .forEach(v -> handleMethod(instance, v));
-        } catch (Exception e) {
+                    .forEach(v -> handleMethod(instance, v));
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     private void handleMethod(Object instance, Method method) {
         try {
             Object invoke = method.invoke(instance);
-            Class<?> anInterface = invoke.getClass().getInterfaces()[0];
+            Class<?> anInterface = method.getReturnType();
             addToHash(invoke, anInterface);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);

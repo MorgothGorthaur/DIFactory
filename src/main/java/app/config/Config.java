@@ -7,7 +7,6 @@ import app.calc.CalcProSecondImpl;
 @app.annotation.Config
 public class Config {
 
-
     public CalcPro calcPro() {
         return new CalcProSecondImpl();
     }
