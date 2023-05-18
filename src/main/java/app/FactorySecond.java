@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class FactorySecond implements DIFactory {
-    private final Map<Class<?>, Class<?>> context;
-    private final Map<Class<?>, Object> hash;
+    private final Map<Class<?>, Class<?>> interfaceImplementationMap;
+    private final Map<Class<?>, Object> interfaceInstanceMap;
 
     private final Reflections reflections;
 
@@ -24,20 +24,20 @@ public class FactorySecond implements DIFactory {
 
     public FactorySecond(String packageName) {
         this.packageName = packageName;
-        this.reflections = new Reflections(packageName);
-        context = new HashMap<>();
-        hash = new HashMap<>();
+        reflections = new Reflections(packageName);
+        interfaceImplementationMap = new HashMap<>();
+        interfaceInstanceMap = new HashMap<>();
         scanConfigs();
         scanComponents();
     }
 
     @Override
     public <T> T getInstance(Class<T> interfaceClazz) {
-        if (hash.containsKey(interfaceClazz)) return interfaceClazz.cast(hash.get(interfaceClazz));
-        else if (context.containsKey(interfaceClazz)) {
-            Class<?> implementationClass = context.get(interfaceClazz);
+        if (interfaceInstanceMap.containsKey(interfaceClazz)) return interfaceClazz.cast(interfaceInstanceMap.get(interfaceClazz));
+        else if (interfaceImplementationMap.containsKey(interfaceClazz)) {
+            Class<?> implementationClass = interfaceImplementationMap.get(interfaceClazz);
             T fromImplementation = createFromImplementation(interfaceClazz, implementationClass);
-            hash.put(interfaceClazz, fromImplementation);
+            interfaceInstanceMap.put(interfaceClazz, fromImplementation);
             return fromImplementation;
         }
         throw new RuntimeException("no implementations found!");
@@ -67,9 +67,9 @@ public class FactorySecond implements DIFactory {
     }
 
     private void addToContext(Class<?> clazz, Class<?> interfaceClazz) {
-        if (hash.containsKey(interfaceClazz) || context.containsKey(interfaceClazz))
+        if (interfaceInstanceMap.containsKey(interfaceClazz) || interfaceImplementationMap.containsKey(interfaceClazz))
             throw new RuntimeException("Found second implementation");
-        else context.put(interfaceClazz, clazz);
+        else interfaceImplementationMap.put(interfaceClazz, clazz);
     }
 
     private void scanConfigs() {
@@ -98,8 +98,8 @@ public class FactorySecond implements DIFactory {
     }
 
     private void addToHash(Object invoke, Class<?> anInterface) {
-        if (hash.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
-        else hash.put(anInterface, invoke);
+        if (interfaceInstanceMap.containsKey(anInterface)) throw new RuntimeException("Found second implementation");
+        else interfaceInstanceMap.put(anInterface, invoke);
     }
 
 }
