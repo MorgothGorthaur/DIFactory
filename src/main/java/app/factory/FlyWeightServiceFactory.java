@@ -1,14 +1,13 @@
 package app.factory;
 
-import app.factory.ServiceFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SingletonServiceFactory implements ServiceFactory {
+public class FlyWeightServiceFactory implements ServiceFactory {
     private final Map<Class<?>, Object> instances;
     private final ServiceFactory serviceFactory;
-    public SingletonServiceFactory(ServiceFactory serviceFactory) {
+    public FlyWeightServiceFactory(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
         instances = new HashMap<>();
     }
