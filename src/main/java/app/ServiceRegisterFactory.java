@@ -1,10 +1,11 @@
 package app;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public class ServiceRegisterFactory implements ServiceFactory{
-    private static final HashMap<Class<?>, Function<ServiceFactory, ?>> serviceMap = new HashMap<>();
+    private static final Map<Class<?>, Function<ServiceFactory, ?>> serviceMap = new HashMap<>();
 
     public <T> T createInstance(Class<T> interfaceClass) {
         if(!serviceMap.containsKey(interfaceClass)) throw new RuntimeException("No implementations found!");
