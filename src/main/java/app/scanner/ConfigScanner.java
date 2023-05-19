@@ -1,5 +1,6 @@
 package app.scanner;
 
+import app.ServiceFactory;
 import app.ServiceRegisterFactory;
 import app.annotation.Bean;
 import app.annotation.Config;
@@ -8,6 +9,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class ConfigScanner implements InstanceScanner {
     private final Reflections reflections;
@@ -34,13 +36,17 @@ public class ConfigScanner implements InstanceScanner {
 
     private void handleMethod(Object instance, Method method) {
         Class<?> anInterface = method.getReturnType();
-        ServiceRegisterFactory.register(anInterface, (ServiceFactory) -> {
+        ServiceRegisterFactory.register(anInterface, getInstance(instance, method));
+    }
+
+    private Function<ServiceFactory, Object> getInstance(Object instance, Method method) {
+        return (ServiceFactory) -> {
             try {
                 return method.invoke(instance);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
-        });
+        };
     }
 
 }

@@ -1,5 +1,6 @@
 package app.scanner;
 
+import app.ServiceFactory;
 import app.ServiceRegisterFactory;
 import app.annotation.Component;
 import org.reflections.Reflections;
@@ -8,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ComponentScanner implements InstanceScanner {
@@ -32,15 +34,19 @@ public class ComponentScanner implements InstanceScanner {
     }
 
     private void register(Class<?> clazz, Class<?> interfaceClazz) {
-        ServiceRegisterFactory.register(interfaceClazz, (serviceFactory) -> {
+        ServiceRegisterFactory.register(interfaceClazz, getInstance(clazz));
+    }
+
+    private Function<ServiceFactory, Object> getInstance(Class<?> clazz) {
+        return (serviceFactory) -> {
             try {
                 Constructor<?> constructor = Arrays.stream(clazz.getDeclaredConstructors())
                         .findFirst().orElseThrow(RuntimeException::new);
                 Object[] objects = Arrays.stream(constructor.getParameters()).map(Parameter::getType).map(serviceFactory::createInstance).toArray();
                 return constructor.newInstance(objects);
-            }  catch (InvocationTargetException | InstantiationException | IllegalAccessException ex) {
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
-        });
+        };
     }
 }
