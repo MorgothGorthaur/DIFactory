@@ -1,9 +1,8 @@
-package app.scanner;
+package app.register;
 
 import app.ServiceFactory;
 import app.ServiceRegisterFactory;
 import app.annotation.Component;
-import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,29 +11,30 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class ComponentScanner implements InstanceScanner {
+public class ComponentRegister implements Register {
+    private Register nextRegister;
     private final String packageName;
-    private final Reflections reflections;
 
-    public ComponentScanner(String packageName) {
+    public ComponentRegister(String packageName, Register nextRegister) {
+        this.nextRegister = nextRegister;
         this.packageName = packageName;
-        reflections = new Reflections(packageName);
+    }
+
+    public ComponentRegister(String packageName) {
+        this.packageName = packageName;
     }
 
     @Override
-    public void scan() {
-        reflections.getTypesAnnotatedWith(Component.class).forEach(this::handleComponent);
+    public void register(Class<?> clazz) {
+        if (clazz.getDeclaredAnnotation(Component.class) != null) registerComponent(clazz);
+        else if (nextRegister != null) nextRegister.register(clazz);
     }
 
-    private void handleComponent(Class<?> clazz) {
-            Predicate<Class<?>> isDesiredInterface = interfaceClazz
-                    -> interfaceClazz.getPackage().getName().startsWith(packageName);
-            Arrays.stream(clazz.getInterfaces()).filter(isDesiredInterface)
-                    .forEach(interfaceClazz -> register(clazz, interfaceClazz));
-    }
-
-    private void register(Class<?> clazz, Class<?> interfaceClazz) {
-        ServiceRegisterFactory.register(interfaceClazz, getInstance(clazz));
+    private void registerComponent(Class<?> clazz) {
+        Predicate<Class<?>> isDesiredInterface = interfaceClazz
+                -> interfaceClazz.getPackage().getName().startsWith(packageName);
+        Arrays.stream(clazz.getInterfaces()).filter(isDesiredInterface)
+                .forEach(interfaceClazz -> ServiceRegisterFactory.register(interfaceClazz, getInstance(clazz)));
     }
 
     private Function<ServiceFactory, Object> getInstance(Class<?> clazz) {

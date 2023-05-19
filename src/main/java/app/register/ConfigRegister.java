@@ -1,42 +1,39 @@
-package app.scanner;
+package app.register;
 
 import app.ServiceFactory;
 import app.ServiceRegisterFactory;
 import app.annotation.Bean;
 import app.annotation.Config;
-import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Function;
 
-public class ConfigScanner implements InstanceScanner {
-    private final Reflections reflections;
+public class ConfigRegister implements Register{
 
-    public ConfigScanner(String packageName) {
-        reflections = new Reflections(packageName);
+    private Register nextRegister;
+    public ConfigRegister(){
+
     }
-
+    public ConfigRegister(Register nextRegister) {
+        this.nextRegister = nextRegister;
+    }
     @Override
-    public void scan() {
-        reflections.getTypesAnnotatedWith(Config.class).forEach(this::handleConfig);
+    public void register(Class<?> clazz) {
+        if(clazz.getDeclaredAnnotation(Config.class) != null) registerConfig(clazz);
+        else if(nextRegister != null) nextRegister.register(clazz);
     }
 
-    private void handleConfig(Class<?> clazz) {
+    private void registerConfig(Class<?> clazz) {
         try {
             Object instance = clazz.getDeclaredConstructor().newInstance();
             Arrays.stream(clazz.getMethods()).filter(v -> v.isAnnotationPresent(Bean.class))
-                    .forEach(v -> handleMethod(instance, v));
+                    .forEach(v -> ServiceRegisterFactory.register(v.getReturnType(), getInstance(instance, v)));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void handleMethod(Object instance, Method method) {
-        Class<?> anInterface = method.getReturnType();
-        ServiceRegisterFactory.register(anInterface, getInstance(instance, method));
     }
 
     private Function<ServiceFactory, Object> getInstance(Object instance, Method method) {
@@ -48,5 +45,4 @@ public class ConfigScanner implements InstanceScanner {
             }
         };
     }
-
 }
