@@ -1,7 +1,7 @@
 package app.register;
 
-import app.ServiceFactory;
-import app.ServiceRegisterFactory;
+import app.factory.ServiceFactory;
+import app.factory.ServiceRegisterFactory;
 import app.annotation.Bean;
 import app.annotation.Config;
 

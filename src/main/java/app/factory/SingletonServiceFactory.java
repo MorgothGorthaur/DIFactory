@@ -1,9 +1,11 @@
-package app;
+package app.factory;
+
+import app.factory.ServiceFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SingletonServiceFactory implements ServiceFactory{
+public class SingletonServiceFactory implements ServiceFactory {
     private final Map<Class<?>, Object> instances;
     private final ServiceFactory serviceFactory;
     public SingletonServiceFactory(ServiceFactory serviceFactory) {

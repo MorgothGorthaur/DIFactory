@@ -3,6 +3,9 @@ package app;
 
 import app.calc.Calc;
 import app.calc.CalcPro;
+import app.factory.ServiceFactory;
+import app.factory.ServiceRegisterFactory;
+import app.factory.SingletonServiceFactory;
 import app.register.ComponentRegister;
 import app.register.ConfigRegister;
 import app.register.Register;

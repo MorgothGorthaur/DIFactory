@@ -1,10 +1,12 @@
-package app;
+package app.factory;
+
+import app.factory.ServiceFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ServiceRegisterFactory implements ServiceFactory{
+public class ServiceRegisterFactory implements ServiceFactory {
     private static final Map<Class<?>, Function<ServiceFactory, ?>> serviceMap = new HashMap<>();
 
     public <T> T createInstance(Class<T> interfaceClass) {
