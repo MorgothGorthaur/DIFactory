@@ -12,7 +12,7 @@ public class App {
         new ComponentScanner("app").scan();
         new ConfigScanner("app").scan();
 
-        ServiceFactory serviceFactory = new ServiceLazyFactory(new ServiceRegisterFactory());
+        ServiceFactory serviceFactory = new SingletonServiceFactory(new ServiceRegisterFactory());
         Calc instance = serviceFactory.createInstance(Calc.class);
         CalcPro instance1 = serviceFactory.createInstance(CalcPro.class);
         System.out.println(instance);

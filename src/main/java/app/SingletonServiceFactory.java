@@ -3,10 +3,10 @@ package app;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServiceLazyFactory implements ServiceFactory{
+public class SingletonServiceFactory implements ServiceFactory{
     private final Map<Class<?>, Object> instances;
     private final ServiceFactory serviceFactory;
-    public ServiceLazyFactory(ServiceFactory serviceFactory) {
+    public SingletonServiceFactory(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
         instances = new HashMap<>();
     }
