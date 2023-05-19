@@ -1,5 +1,6 @@
-package app;
+package app.scanner;
 
+import app.ServiceRegisterFactory;
 import app.annotation.Component;
 import org.reflections.Reflections;
 

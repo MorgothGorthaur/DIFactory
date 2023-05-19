@@ -3,6 +3,8 @@ package app;
 
 import app.calc.Calc;
 import app.calc.CalcPro;
+import app.scanner.ComponentScanner;
+import app.scanner.ConfigScanner;
 
 public class App {
     public static void main(String[] args) {
