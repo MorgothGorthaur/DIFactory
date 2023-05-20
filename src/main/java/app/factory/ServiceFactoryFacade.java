@@ -1,11 +1,11 @@
 package app.factory;
 
-import app.register.ComponentRegister;
-import app.register.ConfigRegister;
-import app.register.Register;
-import app.scanner.ScannerImpl;
+import app.factory.register.ComponentRegister;
+import app.factory.register.ConfigRegister;
+import app.factory.register.Register;
+import app.factory.scanner.ScannerImpl;
 
-public class ServiceFactoryFacade implements ServiceFactory{
+class ServiceFactoryFacade implements ServiceFactory{
     private final ServiceFactory factory;
     public ServiceFactoryFacade() {
         String packageName = "app";

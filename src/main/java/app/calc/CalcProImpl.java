@@ -1,7 +1,7 @@
 package app.calc;
 
 import app.annotation.Component;
-
+@Component
 public class CalcProImpl implements CalcPro {
     private final Calc calc;
 

@@ -7,7 +7,7 @@ import app.calc.CalcProSecondImpl;
 @app.annotation.Config
 public class Config {
 
-    @Bean
+   // @Bean
     public CalcPro calcPro() {
         return new CalcProSecondImpl();
     }

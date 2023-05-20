@@ -1,4 +1,4 @@
-package app.scanner;
+package app.factory.scanner;
 
 import java.util.List;
 

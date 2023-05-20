@@ -4,7 +4,7 @@ package app.factory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlyWeightServiceFactory implements ServiceFactory {
+class FlyWeightServiceFactory implements ServiceFactory {
     private final Map<Class<?>, Object> instances;
     private final ServiceFactory serviceFactory;
     public FlyWeightServiceFactory(ServiceFactory serviceFactory) {

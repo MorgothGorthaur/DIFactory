@@ -1,4 +1,4 @@
-package app.scanner;
+package app.factory.scanner;
 
 import app.annotation.Component;
 import org.reflections.Reflections;

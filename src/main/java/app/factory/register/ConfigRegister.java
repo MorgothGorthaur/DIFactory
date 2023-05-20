@@ -1,4 +1,4 @@
-package app.register;
+package app.factory.register;
 
 import app.factory.ServiceFactory;
 import app.factory.ServiceRegisterFactory;

@@ -1,8 +1,8 @@
-package app.register;
+package app.factory.register;
 
 import app.factory.ServiceFactory;
-import app.factory.ServiceRegisterFactory;
 import app.annotation.Component;
+import app.factory.ServiceRegisterFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
