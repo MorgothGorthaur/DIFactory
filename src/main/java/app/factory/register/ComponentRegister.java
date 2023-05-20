@@ -1,5 +1,7 @@
 package app.factory.register;
 
+import app.exception.ConstructorNotFoundException;
+import app.exception.InstanceCreationException;
 import app.factory.ServiceFactory;
 import app.annotation.Component;
 import app.factory.ServiceRegisterFactory;
@@ -41,11 +43,11 @@ public class ComponentRegister implements Register {
         return (serviceFactory) -> {
             try {
                 Constructor<?> constructor = Arrays.stream(clazz.getDeclaredConstructors())
-                        .findFirst().orElseThrow(RuntimeException::new);
+                        .findFirst().orElseThrow(() -> new ConstructorNotFoundException(clazz));
                 Object[] objects = Arrays.stream(constructor.getParameters()).map(Parameter::getType).map(serviceFactory::createInstance).toArray();
                 return constructor.newInstance(objects);
-            } catch (InvocationTargetException | InstantiationException | IllegalAccessException ex) {
-                throw new RuntimeException(ex);
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
+                throw new InstanceCreationException(ex.getMessage(), clazz);
             }
         };
     }

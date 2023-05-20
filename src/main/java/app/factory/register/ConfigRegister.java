@@ -1,5 +1,7 @@
 package app.factory.register;
 
+import app.exception.ConfigurationRegistrationException;
+import app.exception.MethodInvocationException;
 import app.factory.ServiceFactory;
 import app.factory.ServiceRegisterFactory;
 import app.annotation.Bean;
@@ -32,7 +34,7 @@ public class ConfigRegister implements Register{
                     .forEach(v -> ServiceRegisterFactory.register(v.getReturnType(), getInstance(instance, v)));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new ConfigurationRegistrationException(e.getMessage(), clazz);
         }
     }
 
@@ -40,8 +42,8 @@ public class ConfigRegister implements Register{
         return (ServiceFactory) -> {
             try {
                 return method.invoke(instance);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+            } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+                throw new MethodInvocationException(e.getMessage(), instance.getClass());
             }
         };
     }
