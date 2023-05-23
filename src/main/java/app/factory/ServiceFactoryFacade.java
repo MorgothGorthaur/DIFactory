@@ -11,7 +11,7 @@ class ServiceFactoryFacade implements ServiceFactory{
         String packageName = "app";
         Register register =new ComponentRegister(packageName, new ConfigRegister());
         new ScannerImpl(packageName).getComponents().forEach(register::register);
-        this.factory = new FlyWeightServiceFactory(new ServiceRegisterFactory());
+        this.factory = new FlyWeightServiceFactory(new ServiceRegisterFactoryImpl());
     }
 
     @Override

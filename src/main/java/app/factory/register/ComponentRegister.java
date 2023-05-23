@@ -4,7 +4,7 @@ import app.exception.ConstructorNotFoundException;
 import app.exception.InstanceCreationException;
 import app.factory.ServiceFactory;
 import app.annotation.Component;
-import app.factory.ServiceRegisterFactory;
+import app.factory.ServiceRegisterFactoryImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +36,7 @@ public class ComponentRegister implements Register {
         Predicate<Class<?>> isDesiredInterface = interfaceClazz
                 -> interfaceClazz.getPackage().getName().startsWith(packageName);
         Arrays.stream(clazz.getInterfaces()).filter(isDesiredInterface)
-                .forEach(interfaceClazz -> ServiceRegisterFactory.register(interfaceClazz, getInstance(clazz)));
+                .forEach(interfaceClazz -> ServiceRegisterFactoryImpl.register(interfaceClazz, getInstance(clazz)));
     }
 
     private Function<ServiceFactory, Object> getInstance(Class<?> clazz) {

@@ -3,7 +3,7 @@ package app.factory.register;
 import app.exception.ConfigurationRegistrationException;
 import app.exception.MethodInvocationException;
 import app.factory.ServiceFactory;
-import app.factory.ServiceRegisterFactory;
+import app.factory.ServiceRegisterFactoryImpl;
 import app.annotation.Bean;
 import app.annotation.Config;
 
@@ -31,7 +31,7 @@ public class ConfigRegister implements Register{
         try {
             Object instance = clazz.getDeclaredConstructor().newInstance();
             Arrays.stream(clazz.getMethods()).filter(v -> v.isAnnotationPresent(Bean.class))
-                    .forEach(v -> ServiceRegisterFactory.register(v.getReturnType(), getInstance(instance, v)));
+                    .forEach(v -> ServiceRegisterFactoryImpl.register(v.getReturnType(), getInstance(instance, v)));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new ConfigurationRegistrationException(e.getMessage(), clazz);
